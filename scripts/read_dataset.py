@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 database_directory = "mit-bih_database"
 
+
 def chooseDirectoryFromRoot(directory):	
 	'''
 	function which takes in the directory to go to from the root directory of project 
@@ -40,28 +41,46 @@ def filesInDirectory(extension):
 
 	return l
 
+def appendAllDataIntoOneDataFrame(file_names, rows_to_skip, delimeter, engine_name, data_frame_headings):
+	'''
+	returns the list of appended data from seperate files into a single dataframe
+
+	Args:
+		file_names (list): list of all the file names of a current extension in that directory
+		
+		rows_to_skip (int): rows to skip while reading from files in database directory (usually to skip name row)
+		
+		delimeter (str): used as a check to see if the reading is done on a .csv file or any other extension file
+		
+		engine_name (str): name of engine being used (in this case python)
+		
+		data_frame_headings (list): names of headings you want in the dataframe
+
+	Returns:
+		appended_data: dataframe with all the data of that specific extension appended together 
+	'''	
+
+	appended_data = pd.DataFrame()
+
+	#read data of csv files iteratively
+	for file in file_names:
+		print file
+		#check to see if reading csv or text files
+		if delimeter == None:		
+			appended_data = appended_data.append(pd.read_csv(file, skiprows=rows_to_skip, engine=engine_name, names=data_frame_headings))
+		else:
+			appended_data = appended_data.append(pd.read_csv(file, skiprows=rows_to_skip, sep=delimeter, engine=engine_name,  names=data_frame_headings))
+
+	return appended_data
+
 if __name__ == '__main__':
 
 	#find directory where data is
 	chooseDirectoryFromRoot(database_directory)
 
-	#get all .txt and .csv files
+	#get all .csv and .txt files (respectively)
 	data_files = filesInDirectory(".csv")
 	annotation_files = filesInDirectory(".txt")
 
-	#read data of csv files iteratively
-	# for file in database_files:
-	# 	print pd.read_csv(file)
-	# 	print ""
-	# 	print ""
-	
-	#skip the name row and read all the rest data along with saving it in a dataframe
-	first_csv_df = pd.read_csv(data_files[0], skiprows=1, names=['MLII', 'V1'])
-
-	#skip the first two lines and save the rest data in the dataframe (use delimeter as space '    ')
-	first_txt_df = pd.read_csv(annotation_files[0], skiprows=2, sep='    ', engine='python', names=['time', 'sample_no', 'type', 'sub', 'chan', 'num'])
-
-
-	print first_csv_df.head(5)
-	print ""
-	print first_txt_df.head(5)
+	signal_data_df = appendAllDataIntoOneDataFrame(data_files, 1, None, 'python', ['MLII', 'V1'])
+	annotation_data_df = appendAllDataIntoOneDataFrame(annotation_files, 2 , '    ', 'python', ['time', 'sample_no', 'type', 'sub', 'chan', 'num'])
