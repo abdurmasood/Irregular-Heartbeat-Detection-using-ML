@@ -1,10 +1,7 @@
 import pandas as pd
 import os 
 import matplotlib.pyplot as plt
-
-
-database_directory = "mit-bih_database"
-
+import wfdb
 
 def chooseDirectoryFromRoot(directory):	
 	'''
@@ -28,7 +25,7 @@ def filesInDirectory(extension):
 		extension (str): file type to get
 
 	Returns:
-		l: list of file names with extension (in current directory)
+		l (list): list of file names with extension (in current directory)
 	'''
 	l = []
 
@@ -76,11 +73,15 @@ def appendAllDataIntoOneDataFrame(file_names, rows_to_skip, delimeter, engine_na
 if __name__ == '__main__':
 
 	#find directory where data is
-	chooseDirectoryFromRoot(database_directory)
+	chooseDirectoryFromRoot('mit-bih_database')
 
 	#get all .csv and .txt files (respectively)
 	data_files = filesInDirectory(".csv")
 	annotation_files = filesInDirectory(".txt")
 
-	signal_data_df = appendAllDataIntoOneDataFrame(data_files, 1, None, 'python', ['MLII', 'V1'])
-	annotation_data_df = appendAllDataIntoOneDataFrame(annotation_files, 2 , '    ', 'python', ['time', 'sample_no', 'type', 'sub', 'chan', 'num'])
+	#create dataframes of both .csv and .txt files 
+	#signal_data_df = appendAllDataIntoOneDataFrame(data_files, 1, None, 'python', [])
+	#annotation_data_df = appendAllDataIntoOneDataFrame(annotation_files, 2 , '    ', 'python', ['time', 'sample_no', 'type', 'sub', 'chan', 'num'])
+
+	
+
