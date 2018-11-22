@@ -3,6 +3,7 @@ import os
 import wfdb
 from wfdb import processing
 import read_dataset
+import matplotlib.pyplot as plt
 
 def takeAllInputs():
 	'''
@@ -56,6 +57,18 @@ def getSignalInfo(file_number, sample_from, sample_to):
 	signal, fields = wfdb.rdsamp(file_number, sampfrom=sample_from, sampto=sample_to, channels=[0])
 	return signal, fields
 
+def plot_item(signal):
+	'''
+	Plots signal passed in
+
+	Args:	
+			signal (list): list of intensity values s
+	'''
+	plt.plot(signal)
+	plt.ylabel('Intensity')
+	plt.xlabel('time/samples')
+	plt.show()
+
 def plotSingleBeat(file_number, beat_start, beat_end):
 	'''
 	Plots the single beat of a signal
@@ -71,7 +84,7 @@ def plotSingleBeat(file_number, beat_start, beat_end):
 	signal, fields = getSignalInfo(file_number, beat_start, beat_end)
 
 	#plot beat
-	wfdb.plot_items(signal=signal, title='Beat From Patient ' + str(file_number))
+	plot_item(signal)
 
 def plotSignal(file_number, sample_from, sample_to):
 	'''
@@ -129,7 +142,8 @@ if __name__ == '__main__':
 	#take user inputs
 	file_number, sample_from, sample_to = takeAllInputs()
 
-	plotSignal(file_number, sample_from, sample_to)
+	#uncomment to plot entire signal
+	#plotSignal(file_number, sample_from, sample_to)
 
 	#get locations where QRS Complex happens
 	qrs_locs = getQRSLocations()
