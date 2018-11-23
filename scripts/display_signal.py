@@ -2,8 +2,8 @@ import pandas as pd
 import os 
 import wfdb
 from wfdb import processing
-import read_dataset
 import matplotlib.pyplot as plt
+from PIL import Image
 
 def takeAllInputs():
 	'''
@@ -57,19 +57,7 @@ def getSignalInfo(file_number, sample_from, sample_to):
 	signal, fields = wfdb.rdsamp(file_number, sampfrom=sample_from, sampto=sample_to, channels=[0])
 	return signal, fields
 
-def plot_item(signal):
-	'''
-	Plots signal passed in
-
-	Args:	
-			signal (list): list of intensity values s
-	'''
-	plt.plot(signal)
-	plt.ylabel('Intensity')
-	plt.xlabel('time/samples')
-	plt.show()
-
-def plotSingleBeat(file_number, beat_start, beat_end):
+def writeSingleBeat(file_number, beat_start, beat_end, beat_number, beat_wr_dir):
 	'''
 	Plots the single beat of a signal
 
@@ -79,12 +67,42 @@ def plotSingleBeat(file_number, beat_start, beat_end):
 			beat_start (int): start index of beat
 
 			beat_end (int): end index of beat
+
+			beat_number (int): the index of what beat is currently being plotted
+	
+			beat_wr_dir (str): directory to where beat needs to be written
 	'''
 	#get signal and fields of specified file_number
+	
 	signal, fields = getSignalInfo(file_number, beat_start, beat_end)
 
 	#plot beat
-	plot_item(signal)
+	plotItem(signal, beat_number, beat_wr_dir, file_number)
+
+def plotItem(signal, beat_number, beat_wr_dir, file_number):
+	'''
+	Plots and saves signal passed in current directory
+
+	Args:	
+			signal (list): list of intensity values of signal to be plotted
+
+			beat_number (int): the index of what beat is currently being plotted
+
+			beat_wr_dir (str): directory to where beat needs to be written
+
+			file_number (str): number of file to plot
+	'''
+	#plot color signal and save
+	plt.plot(signal)
+	plt.axis('off')
+	plt.savefig(beat_wr_dir + '\\image_' + file_number + '_' + str(beat_number), dpi=250)
+	
+	#convert grayscale and overwrite
+	img = Image.open(beat_wr_dir + '\\image_' + file_number + '_' + str(beat_number) + '.png').convert('LA')
+	img.save(beat_wr_dir + '\\image_' + file_number + '_' + str(beat_number) + '.png')
+
+	#clear plot before next plot
+	plt.clf()
 
 def plotSignal(file_number, sample_from, sample_to):
 	'''
@@ -121,7 +139,7 @@ def getXQRS(signal, fields):
 	xqrs.detect(verbose=True)
 	return xqrs
 
-def getQRSLocations():
+def getQRSLocations(file_number):
 	'''
 	get numpy list of QRS Locations
 
@@ -129,24 +147,35 @@ def getQRSLocations():
 			qrs_locs (numpy list): list of QRS locations in the signal
 	
 	'''
-	record = wfdb.rdrecord(file_number, sampfrom=sample_from, sampto=sample_to, channels=[0])
+	record = wfdb.rdrecord(file_number, channels=[0])
 	qrs_locs = processing.gqrs_detect(record.p_signal[:,0], fs=record.fs)
 	return qrs_locs
 
+def getBeatWriteDirectory():	
+	'''
+	function which changes directory to where beat images need to be written 
+	'''
 
-if __name__ == '__main__':
+	beat_wr_dir = os.getcwd() + '\\..\\..\\' + 'beat_write_dir'
 
-	#find directory where data is
-	read_dataset.chooseDirectoryFromRoot('mit-bih_waveform')
+	#if dir does not exist make new one
+	if not os.path.exists(beat_wr_dir):
+		os.mkdir(beat_wr_dir)
+		return beat_wr_dir
+	else:    
+		#return directory specified
+		return beat_wr_dir
 
-	#take user inputs
-	file_number, sample_from, sample_to = takeAllInputs()
-
-	#uncomment to plot entire signal
-	#plotSignal(file_number, sample_from, sample_to)
+def extractBeatsFromPatient(file_number):
 
 	#get locations where QRS Complex happens
-	qrs_locs = getQRSLocations()
+	qrs_locs = getQRSLocations(file_number)
 
-	#plot the first beat in the range selected
-	plotSingleBeat(file_number, qrs_locs[0] - 70, qrs_locs[1]-70)
+	#save directory where beats need to be written
+	beat_wr_dir = getBeatWriteDirectory()
+
+	#plot and save the beats in the range selected
+	for beat_number in range(2):
+		beat_start = qrs_locs[beat_number] - 70
+		beat_end = qrs_locs[beat_number+1] - 70
+		writeSingleBeat(file_number, beat_start, beat_end, beat_number, beat_wr_dir)

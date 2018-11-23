@@ -1,6 +1,7 @@
 import pandas as pd
 import os 
 import wfdb
+import display_signal
 
 def chooseDirectoryFromRoot(directory):	
 	'''
@@ -37,50 +38,24 @@ def filesInDirectory(extension):
 
 	return l
 
-def appendAllDataIntoOneDataFrame(file_names, rows_to_skip, delimeter, engine_name, data_frame_headings):
+def removeFileExtension(file):
 	'''
-	returns the list of appended data from seperate files into a single dataframe
+	remove extension of file passed in as a string
 
 	Args:
-		file_names (list): list of all the file names of a current extension in that directory
-		
-		rows_to_skip (int): rows to skip while reading from files in database directory (usually to skip name row)
-		
-		delimeter (str): used as a check to see if the reading is done on a .csv file or any other extension file
-		
-		engine_name (str): name of engine being used (in this case python)
-		
-		data_frame_headings (list): names of headings you want in the dataframe
-
-	Returns:
-		appended_data: dataframe with all the data of that specific extension appended together 
-	'''	
-
-	appended_data = pd.DataFrame()
-
-	#read data of csv files iteratively
-	for file in file_names:
-		print file
-		#check to see if reading csv or text files
-		if delimeter == None:		
-			appended_data = appended_data.append(pd.read_csv(file, skiprows=rows_to_skip, engine=engine_name, names=data_frame_headings))
-		else:
-			appended_data = appended_data.append(pd.read_csv(file, skiprows=rows_to_skip, sep=delimeter, engine=engine_name,  names=data_frame_headings))
-
-	return appended_data
+			file (str): name of file
+	'''
+	return os.path.splitext(file)[0]
 
 if __name__ == '__main__':
 
 	#find directory where data is
-	chooseDirectoryFromRoot('mit-bih_database')
+	chooseDirectoryFromRoot('mit-bih_waveform')
 
-	#get all .csv and .txt files (respectively)
-	data_files = filesInDirectory(".csv")
-	annotation_files = filesInDirectory(".txt")
+	#get all .hea and .dat files (respectively)
+	signals_files = filesInDirectory(".hea")
+	dat_files = filesInDirectory(".dat")
 
-	#create dataframes of both .csv and .txt files 
-	#signal_data_df = appendAllDataIntoOneDataFrame(data_files, 1, None, 'python', [])
-	#annotation_data_df = appendAllDataIntoOneDataFrame(annotation_files, 2 , '    ', 'python', ['time', 'sample_no', 'type', 'sub', 'chan', 'num'])
-
-	
-
+	#extract and save beats from file provided
+	for signal_file in signals_files:
+		display_signal.extractBeatsFromPatient(removeFileExtension(signal_file))
