@@ -1,3 +1,5 @@
+#File to save images of beats in a specified directory
+
 import os 
 import wfdb
 import signal_info

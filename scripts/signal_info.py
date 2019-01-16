@@ -1,3 +1,6 @@
+#This file is used for prcessing signal information. It has methods for
+#reading signal information from mit-bih dataset and plotting hearbeats.
+
 import pandas as pd
 import os 
 import wfdb
@@ -116,16 +119,17 @@ def plotItem(signal, beat_number, wr_dir, file_path):
 	#clear plot before next plot
 	plt.clf()
 
-'''
-Takes a string and gets all the ints from that string
 
-Args:
-	string (str): string to find numbers from
-
-Returns:
-	(list): list of all number in the string 
-'''
 def getNumbersFromString(string):
+	'''
+	Takes a string and gets all the ints from that string
+
+	Args:
+		string (str): string to find numbers from
+
+	Returns:
+		(list): list of all number in the string 
+	'''
 	return (re.findall(r'\d+', string))
 
 
@@ -177,13 +181,14 @@ def getQRSLocations(file_path):
 	return qrs_locs
 
 
-'''
-finds qrs complexes in specified patient file
 
-Args:
-	file_path (str): path of where patient data is present
-'''
 def extractBeatsFromPatient(file_path):
+	'''
+	finds qrs complexes in specified patient file
+
+	Args:
+		file_path (str): path of where patient data is present
+	'''
 
 	#get list of locations where QRS Complex happens
 	qrs_locs = getQRSLocations(file_path)

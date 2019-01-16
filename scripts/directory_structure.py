@@ -1,5 +1,7 @@
-import os 
+#File to specify directory structure for project and to specify other methods
+#related to reading and writin directories and removing file extensions.
 
+import os 
 
 def chooseDirectoryFromRoot(directory):	
 	'''

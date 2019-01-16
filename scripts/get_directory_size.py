@@ -1,3 +1,6 @@
+#File used to estimate size of directory according to .png images it 
+#already has. 
+
 import signal_info
 import directory_structure
 import os
@@ -29,4 +32,4 @@ if __name__ == '__main__':
         EXPECTED_SIZE_OF_DIR += (current_file_size*qrs_count) 
 
 
-    print "The expectied size of the images all together is " EXPECTED_SIZE_OF_DIR
+    print "The expectied size of the images all together is " + EXPECTED_SIZE_OF_DIR
