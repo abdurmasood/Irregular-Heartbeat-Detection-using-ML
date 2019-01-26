@@ -94,7 +94,7 @@ def writeSingleBeat(file_path, beat_start, beat_end, beat_number):
 
 def plotItem(signal, beat_number, wr_dir, file_path):
 	'''
-	Plots and saves signal passed in current directory
+	Plots and saves signal passed in current directory passed
 
 	Args:	
 			signal (list): list of intensity values of signal to be plotted
@@ -110,7 +110,7 @@ def plotItem(signal, beat_number, wr_dir, file_path):
 	#plot color signal and save
 	plt.plot(signal)
 	plt.axis('off')
-	plt.savefig(wr_dir + '\\image_' + file_number + '_' + str(beat_number), dpi=250)
+	plt.savefig(wr_dir + '\\image_' + file_number + '_' + str(beat_number), dpi=125)
 	
 	#convert grayscale and overwrite
 	img = Image.open(wr_dir + '\\image_' + file_number + '_' + str(beat_number) + '.png').convert('LA')
@@ -192,7 +192,6 @@ def extractBeatsFromPatient(file_path):
 
 	#get list of locations where QRS Complex happens
 	qrs_locs = getQRSLocations(file_path)
-	print "number of qrs locs of patient " + getNumbersFromString(file_path)[0] + " is " + str(len(qrs_locs))
 
 	#uncomment to extract all heartbeats
 	#NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs)

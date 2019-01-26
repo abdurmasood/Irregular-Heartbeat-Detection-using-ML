@@ -9,8 +9,6 @@ import directory_structure
 if __name__ == '__main__':
 
 	#find directory where data is
-	# directory_structure.chooseDirectoryFromRoot('mit-bih_waveform')
-
 	signal_dir = directory_structure.getReadDirectory('mit-bih_waveform')
 
 	#get all .hea and .dat files (respectively)
