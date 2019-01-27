@@ -1,3 +1,4 @@
+# coding: utf-8
 #File to specify directory structure for project and to specify other methods
 #related to reading and writin directories and removing file extensions.
 
@@ -60,7 +61,7 @@ def getWriteDirectory(directory_name):
 		wr_dir (str): path of directory to write data to
 	'''
 
-	wr_dir = os.getcwd() + '\\..\\..\\' + directory_name
+	wr_dir = os.getcwd() + '/../../' + directory_name
 
 	#if dir does not exist make new one
 	if not os.path.exists(wr_dir):
@@ -81,6 +82,6 @@ def getReadDirectory(directory_name):
 		rd_dir (str): path of directory to read data from
 	'''
 
-	rd_dir = os.getcwd() + '\\..\\' + directory_name
+	rd_dir = os.getcwd() + '/../' + directory_name
 
 	return rd_dir
