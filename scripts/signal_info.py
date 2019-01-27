@@ -4,7 +4,7 @@
 import pandas as pd
 import os 
 import wfdb
-from wfdb import processing
+from wfdb import processing #not importing processing 
 import matplotlib.pyplot as plt
 from PIL import Image
 import directory_structure
@@ -27,9 +27,9 @@ def takeAllInputs():
 		sample_to (int): end index of sample
 	'''
 	try:
-		file_path = raw_input("\nWhat file do want to display \n")
-		sample_from = raw_input("\nWhere do you want the sample to start \n")
-		sample_to = raw_input("\nWhere do you want the sample to end \n")
+		file_path = raw_input('\nWhat file do want to display \n')
+		sample_from = raw_input('\nWhere do you want the sample to start \n')
+		sample_to = raw_input('\nWhere do you want the sample to end \n')
 		
 		return str(file_path), int(sample_from), int(sample_to)
 	except:
@@ -110,11 +110,11 @@ def plotItem(signal, beat_number, wr_dir, file_path):
 	#plot color signal and save
 	plt.plot(signal)
 	plt.axis('off')
-	plt.savefig(wr_dir + '\\image_' + file_number + '_' + str(beat_number), dpi=125)
+	plt.savefig(wr_dir + '/image_' + file_number + '_' + str(beat_number), dpi=125)
 	
 	#convert grayscale and overwrite
-	img = Image.open(wr_dir + '\\image_' + file_number + '_' + str(beat_number) + '.png').convert('LA')
-	img.save(wr_dir + '\\image_' + file_number + '_' + str(beat_number) + '.png')
+	img = Image.open(wr_dir + '/image_' + file_number + '_' + str(beat_number) + '.png').convert('LA')
+	img.save(wr_dir + '/image_' + file_number + '_' + str(beat_number) + '.png')
 
 	#clear plot before next plot
 	plt.clf()
