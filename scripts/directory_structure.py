@@ -25,6 +25,8 @@ def filesInDirectory(extension, directory):
 	Args:
 		extension (str): file type to get
 
+		directory (str): path of where files are present
+
 	Returns:
 		l (list): list of file names with extension (in current directory)
 	'''

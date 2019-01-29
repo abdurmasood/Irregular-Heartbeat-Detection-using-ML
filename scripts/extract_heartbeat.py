@@ -4,6 +4,7 @@ import os
 import wfdb
 import signal_info
 import directory_structure
+import natsort  # module used to sort file names
 
 
 if __name__ == '__main__':
@@ -13,6 +14,9 @@ if __name__ == '__main__':
 
 	#get all .hea and .dat files (respectively)
 	signal_files = directory_structure.filesInDirectory('.hea', signal_dir)
+
+	# sort file names in ascending order in list
+	signal_files = natsort.natsorted(signal_files)
 
 	#extract and save beats from file provided
 	for signal_file in signal_files:
