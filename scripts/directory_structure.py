@@ -8,7 +8,7 @@ import re
 
 def chooseDirectoryFromRoot(directory):	
 	'''
-	function which takes in the directory to go to from the root directory of project 
+	take directory to go to from the root directory of project 
 
 	Args:
 		directory (str): name of directory user wants to go to
@@ -22,7 +22,7 @@ def chooseDirectoryFromRoot(directory):
 
 def filesInDirectory(extension, directory):
 	'''
-	returns the list of files in the directory with a specific extension
+	return the list of files in the directory with a specific extension
 
 	Args:
 		extension (str): file type to get
@@ -55,18 +55,24 @@ def removeFileExtension(file):
 	'''
 	return os.path.splitext(file)[0]
 
-def getWriteDirectory(directory_name):	
+def getWriteDirectory(directory_name, subdirectory_name):	
 	'''
-	function which gets path of directory name specified
+	get path of directory name specified where information needs
+	to be written to (subdirectory specification is optional)
 	
 	Args:
 		directory_name (str): name of directory to read from
+
+		subdirectory (str): subdirectory of directory specified
 
 	Returns:
 		wr_dir (str): path of directory to write data to
 	'''
 
-	wr_dir = os.getcwd() + '/../../' + directory_name
+	if subdirectory_name == None:
+		wr_dir = os.getcwd() + '/../../' + directory_name
+	else:
+		wr_dir = os.getcwd() + '/../../' + directory_name + '/' + subdirectory_name
 
 	#if dir does not exist make new one
 	if not os.path.exists(wr_dir):
@@ -78,7 +84,7 @@ def getWriteDirectory(directory_name):
 
 def getReadDirectory(directory_name):	
 	'''
-	function which gets the path of passed in directory name from root of project
+	get the path of passed in directory name from root of project
 
 	Args:
 		directory_name (str): name of directory to read from
@@ -88,7 +94,6 @@ def getReadDirectory(directory_name):
 	'''
 
 	rd_dir = os.getcwd() + '/../' + directory_name
-
 	return rd_dir
 
 def extractNumFromFile(file_name): 

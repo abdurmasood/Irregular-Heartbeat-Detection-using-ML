@@ -67,7 +67,7 @@ def getSignalInfo(file_path, sample_from, sample_to):
 	signal, fields = wfdb.rdsamp(file_path, sampfrom=sample_from, sampto=sample_to, channels=[0])
 	return signal, fields
 
-def writeSingleBeat(file_path, beat_start, beat_end, beat_number):
+def writeSingleBeat(file_path, beat_start, beat_end, beat_number, beat_type):
 	'''
 	Plots the single beat of a signal
 
@@ -79,20 +79,20 @@ def writeSingleBeat(file_path, beat_start, beat_end, beat_number):
 			beat_end (int): end index of beat
 
 			beat_number (int): the index of what beat is currently being plotted
-	
-			wr_dir (str): directory to where beat needs to be written
+			
+			beat_type (str): classification label of beat
 	'''
 
 	#save directory where beats need to be written
-	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir')
+	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir', beat_type)
 
 	#get signal and fields of specified file_path
 	signal, fields = getSignalInfo(file_path, beat_start, beat_end)
 
 	#plot beat
-	plotItem(signal, beat_number, beat_wr_dir, file_path)
+	saveSignal(signal, beat_number, beat_wr_dir, file_path)
 
-def plotItem(signal, beat_number, wr_dir, file_path):
+def saveSignal(signal, beat_number, wr_dir, file_path):
 	'''
 	Plots and saves signal passed in current directory passed
 
@@ -200,11 +200,12 @@ def extractBeatsFromPatient(file_path, ann_df):
 	NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs) - 1
 
 	#get path where beats need to be written
-	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir')
+	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir', None)
 
 	#plot and save the beats in the range selected
 	for beat_number in range(NUM_HEARTBEATS_TO_EXTRACT):
 		beat_start = qrs_locs[beat_number] - BEAT_START_OFFSET
 		beat_end = qrs_locs[beat_number+1] - BEAT_END_OFFSET
-		writeSingleBeat(file_path, beat_start, beat_end, beat_number)
-		print "Beat Type Written for " + str(beat_number) + ":  " + ann_df['Type'][beat_number]
+		beat_type = ann_df['Type'][beat_number]
+
+		writeSingleBeat(file_path, beat_start, beat_end, beat_number, beat_type)

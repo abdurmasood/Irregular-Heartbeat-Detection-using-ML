@@ -19,7 +19,7 @@ def getAnnotationDataFrame(file_name):
 		(dataframe): dataframe of annotation information
 	'''
 	
-	ann_dir_pkl = directory_structure.getWriteDirectory('pickle_annotation_data') + '/' + directory_structure.removeFileExtension(file_name) + '.pkl'
+	ann_dir_pkl = directory_structure.getWriteDirectory('pickle_annotation_data', None) + '/' + directory_structure.removeFileExtension(file_name) + '.pkl'
 	return pd.read_pickle(ann_dir_pkl)
 
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
 	ann_files = directory_structure.filesInDirectory(".txt", ann_dir)
 
 	# get dir where pickle data needs to be written
-	pickle_ann_dir = directory_structure.getWriteDirectory('pickle_annotation_data')
+	pickle_ann_dir = directory_structure.getWriteDirectory('pickle_annotation_data', None)
 
 	# sort file names in ascending order in list
 	ann_files = natsort.natsorted(ann_files)
