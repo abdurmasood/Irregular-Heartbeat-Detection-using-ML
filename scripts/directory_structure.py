@@ -3,6 +3,8 @@
 #related to reading and writin directories and removing file extensions.
 
 import os 
+import re 
+  
 
 def chooseDirectoryFromRoot(directory):	
 	'''
@@ -55,7 +57,8 @@ def removeFileExtension(file):
 
 def getWriteDirectory(directory_name):	
 	'''
-	function which gets path of directory specified
+	function which gets path of directory name specified
+	
 	Args:
 		directory_name (str): name of directory to read from
 
@@ -87,3 +90,17 @@ def getReadDirectory(directory_name):
 	rd_dir = os.getcwd() + '/../' + directory_name
 
 	return rd_dir
+
+def extractNumFromFile(file_name): 
+	'''
+	get maximum number from file name passed in
+
+	Args;
+		file_name (str): string to extract number from
+
+	Returns:
+		(str): max number from file name 
+	'''
+	numbers = re.findall('\d+',file_name) 
+	numbers = map(int,numbers) 
+	return str(numbers[0])

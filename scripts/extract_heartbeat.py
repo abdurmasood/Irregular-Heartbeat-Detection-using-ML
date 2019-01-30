@@ -4,6 +4,7 @@ import os
 import wfdb
 import signal_info
 import directory_structure
+import annotation_data_interface as ADI
 import natsort  # module used to sort file names
 
 
@@ -20,5 +21,6 @@ if __name__ == '__main__':
 
 	#extract and save beats from file provided
 	for signal_file in signal_files:
-		#uncomment to save images of beats
-		signal_info.extractBeatsFromPatient(signal_dir + '/' + directory_structure.removeFileExtension(signal_file))
+		# uncomment to save images of beats
+		# signal_info.extractBeatsFromPatient(signal_dir + '/' + directory_structure.removeFileExtension(signal_file))
+		print ADI.getAnnotationDataFrame(directory_structure.removeFileExtension(signal_file))

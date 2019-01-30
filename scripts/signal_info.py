@@ -184,7 +184,8 @@ def getQRSLocations(file_path):
 
 def extractBeatsFromPatient(file_path):
 	'''
-	finds qrs complexes in specified patient file
+	finds qrs complexes in specified patient file and save the resulting
+	signals in the form of png images in the image write directory (beat_wr_dir)
 
 	Args:
 		file_path (str): path of where patient data is present
@@ -196,7 +197,7 @@ def extractBeatsFromPatient(file_path):
 	#uncomment to extract all heartbeats
 	#NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs)
 
-	#save directory where beats need to be written
+	#get path where beats need to be written
 	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir')
 
 	#plot and save the beats in the range selected
