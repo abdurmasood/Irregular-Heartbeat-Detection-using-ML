@@ -21,6 +21,8 @@ if __name__ == '__main__':
 
 	#extract and save beats from file provided
 	for signal_file in signal_files:
+		# get annotation data frame of signal file
+		ann_df = ADI.getAnnotationDataFrame(directory_structure.removeFileExtension(signal_file))
+
 		# uncomment to save images of beats
-		# signal_info.extractBeatsFromPatient(signal_dir + '/' + directory_structure.removeFileExtension(signal_file))
-		print ADI.getAnnotationDataFrame(directory_structure.removeFileExtension(signal_file))
+		signal_info.extractBeatsFromPatient(signal_dir + '/' + directory_structure.removeFileExtension(signal_file), ann_df)

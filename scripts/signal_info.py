@@ -182,20 +182,22 @@ def getQRSLocations(file_path):
 
 
 
-def extractBeatsFromPatient(file_path):
+def extractBeatsFromPatient(file_path, ann_df):
 	'''
 	finds qrs complexes in specified patient file and save the resulting
 	signals in the form of png images in the image write directory (beat_wr_dir)
 
 	Args:
 		file_path (str): path of where patient data is present
+
+		ann_df (dataframe): data frame containing annotation information of file
 	'''
 
 	#get list of locations where QRS Complex happens
 	qrs_locs = getQRSLocations(file_path)
 
 	#uncomment to extract all heartbeats
-	#NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs)
+	NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs) - 1
 
 	#get path where beats need to be written
 	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir')
@@ -204,4 +206,5 @@ def extractBeatsFromPatient(file_path):
 	for beat_number in range(NUM_HEARTBEATS_TO_EXTRACT):
 		beat_start = qrs_locs[beat_number] - BEAT_START_OFFSET
 		beat_end = qrs_locs[beat_number+1] - BEAT_END_OFFSET
-		writeSingleBeat(file_path, beat_start, beat_end, beat_number)	
+		writeSingleBeat(file_path, beat_start, beat_end, beat_number)
+		print "Beat Type Written for " + str(beat_number) + ":  " + ann_df['Type'][beat_number]
