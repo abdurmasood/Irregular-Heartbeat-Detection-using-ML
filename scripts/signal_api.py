@@ -200,20 +200,19 @@ def extractBeatsFromPatient(file_path, ann):
 		ann_df (dataframe): data frame containing annotation information of file
 	'''
 
-	#get list of locations where QRS Complex happens
-	# qrs_locs = getQRSLocations(file_path)
-	qrs_locs = ann.sample
+	#get list of locations where annotations are
+	ann_locs = ann.sample
 
 	#uncomment to extract all heartbeats
-	NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs) - 1
+	NUM_HEARTBEATS_TO_EXTRACT = len(ann_locs) - 1
 
 	#get path where beats need to be written
 	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir', None)
 
 	#plot and save the beats in the range selected
 	for beat_number in range(NUM_HEARTBEATS_TO_EXTRACT):
-		beat_start = qrs_locs[beat_number] - BEAT_START_OFFSET
-		beat_end = qrs_locs[beat_number+1] - BEAT_END_OFFSET
+		beat_start = ann_locs[beat_number] - BEAT_START_OFFSET
+		beat_end = ann_locs[beat_number+1] - BEAT_END_OFFSET
 		beat_type = ann.symbol[beat_number]
 
 		writeSingleBeat(file_path, beat_start, beat_end, beat_number, beat_type)

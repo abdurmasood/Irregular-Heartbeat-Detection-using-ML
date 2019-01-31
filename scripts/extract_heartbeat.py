@@ -2,7 +2,7 @@
 
 import os 
 import wfdb
-import signal_info
+import signal_api
 import directory_structure
 import natsort  # module used to sort file names
 
@@ -27,4 +27,4 @@ if __name__ == '__main__':
 		ann = wfdb.rdann(signal_path, 'atr', return_label_elements=['symbol', 'description', 'label_store'] , summarize_labels=True)
 		
 		# uncomment to save images of beats
-		signal_info.extractBeatsFromPatient(signal_path, ann)
+		signal_api.extractBeatsFromPatient(signal_path, ann)
