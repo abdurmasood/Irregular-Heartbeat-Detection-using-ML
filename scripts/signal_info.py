@@ -12,8 +12,8 @@ import re
 
 #number of heartbeats to extract
 NUM_HEARTBEATS_TO_EXTRACT = 1
-BEAT_START_OFFSET = 70
-BEAT_END_OFFSET = 70
+BEAT_START_OFFSET = 100
+BEAT_END_OFFSET = 100
 
 def takeAllInputs():
 	'''
@@ -64,6 +64,12 @@ def getSignalInfo(file_path, sample_from, sample_to):
 
 			beat_end (int): end index of beat
 	'''
+	if sample_from < 0 and sample_to < 0:
+		sample_from = 0
+		sample_to = 60
+	elif sample_from < 0:
+		sample_from=0
+
 	signal, fields = wfdb.rdsamp(file_path, sampfrom=sample_from, sampto=sample_to, channels=[0])
 	return signal, fields
 
@@ -158,6 +164,7 @@ def getXQRS(signal, fields):
 
 	Args:
 			signal (list): y values of signal samples
+
 			fields (list): properties of signal
 
 	Returns:
@@ -182,7 +189,7 @@ def getQRSLocations(file_path):
 
 
 
-def extractBeatsFromPatient(file_path, ann_df):
+def extractBeatsFromPatient(file_path, ann):
 	'''
 	finds qrs complexes in specified patient file and save the resulting
 	signals in the form of png images in the image write directory (beat_wr_dir)
@@ -194,7 +201,8 @@ def extractBeatsFromPatient(file_path, ann_df):
 	'''
 
 	#get list of locations where QRS Complex happens
-	qrs_locs = getQRSLocations(file_path)
+	# qrs_locs = getQRSLocations(file_path)
+	qrs_locs = ann.sample
 
 	#uncomment to extract all heartbeats
 	NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs) - 1
@@ -206,6 +214,6 @@ def extractBeatsFromPatient(file_path, ann_df):
 	for beat_number in range(NUM_HEARTBEATS_TO_EXTRACT):
 		beat_start = qrs_locs[beat_number] - BEAT_START_OFFSET
 		beat_end = qrs_locs[beat_number+1] - BEAT_END_OFFSET
-		beat_type = ann_df['Type'][beat_number]
+		beat_type = ann.symbol[beat_number]
 
 		writeSingleBeat(file_path, beat_start, beat_end, beat_number, beat_type)
