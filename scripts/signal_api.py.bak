@@ -27,13 +27,13 @@ def takeAllInputs():
 		sample_to (int): end index of sample
 	'''
 	try:
-		file_path = input('\nWhat file do want to display \n')
-		sample_from = input('\nWhere do you want the sample to start \n')
-		sample_to = input('\nWhere do you want the sample to end \n')
+		file_path = raw_input('\nWhat file do want to display \n')
+		sample_from = raw_input('\nWhere do you want the sample to start \n')
+		sample_to = raw_input('\nWhere do you want the sample to end \n')
 		
 		return str(file_path), int(sample_from), int(sample_to)
 	except:
-		print("Error please try again (Check if the name you're entering is in the database)")
+		print "Error please try again (Check if the name you're entering is in the database)"
 
 def calculateHeartRate(sample_to, xqrs, fs):
 	'''
