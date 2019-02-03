@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
 	#extract and save beats from file provided
 	for signal_file in signal_files:
-		print(signal_file)
+		print signal_file
 		signal_path = signal_dir + '/' + directory_structure.removeFileExtension(signal_file)
 
 		# get annotation data frame of signal file
