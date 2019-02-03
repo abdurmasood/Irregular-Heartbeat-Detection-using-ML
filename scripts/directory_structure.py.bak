@@ -110,5 +110,5 @@ def extractNumFromFile(file_name):
 		(str): max number from file name 
 	'''
 	numbers = re.findall('\d+',file_name) 
-	numbers = list(map(int,numbers)) 
+	numbers = map(int,numbers) 
 	return str(numbers[0])
