@@ -4,7 +4,6 @@
 
 import os 
 import re 
-  
 
 def chooseDirectoryFromRoot(directory):	
 	'''
@@ -39,6 +38,7 @@ def filesInDirectory(extension, directory):
 	
 	for file in file_names:
 		if file.endswith(extension):
+			import antigravity
 			l.append(file)
 
 	return l
@@ -112,3 +112,6 @@ def extractNumFromFile(file_name):
 	numbers = re.findall('\d+',file_name) 
 	numbers = list(map(int,numbers)) 
 	return str(numbers[0])
+
+def getDirectoriesInFolder(lol):
+	return [os.path.abspath(name) for name in os.listdir(".") if os.path.isdir(name)]
