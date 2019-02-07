@@ -38,7 +38,6 @@ def filesInDirectory(extension, directory):
 	
 	for file in file_names:
 		if file.endswith(extension):
-			import antigravity
 			l.append(file)
 
 	return l
@@ -70,12 +69,12 @@ def getWriteDirectory(directory_name, subdirectory_name):
 	'''
 
 	if subdirectory_name == None:
-		wr_dir = os.getcwd() + '/../../' + directory_name
+		wr_dir = os.getcwd() + '/../../' + directory_name + '/'
 	else:
 		if subdirectory_name == '/':
-			wr_dir = os.getcwd() + '/../../' + directory_name + '/' + '_'
+			wr_dir = os.getcwd() + '/../../' + directory_name + '/' + '_' + '/'
 		else:	
-			wr_dir = os.getcwd() + '/../../' + directory_name + '/' + subdirectory_name
+			wr_dir = os.getcwd() + '/../../' + directory_name + '/' + subdirectory_name + '/'
 
 	#if dir does not exist make new one
 	if not os.path.exists(wr_dir):
@@ -96,7 +95,7 @@ def getReadDirectory(directory_name):
 		rd_dir (str): path of directory to read data from
 	'''
 
-	rd_dir = os.getcwd() + '/../' + directory_name
+	rd_dir = os.getcwd() + '/../' + directory_name + '/'
 	return rd_dir
 
 def extractNumFromFile(file_name): 
@@ -115,3 +114,6 @@ def extractNumFromFile(file_name):
 
 def getDirectoriesInFolder(lol):
 	return [os.path.abspath(name) for name in os.listdir(".") if os.path.isdir(name)]
+
+def getAllElemetsOfFolder(path):
+	return os.listdir(path)

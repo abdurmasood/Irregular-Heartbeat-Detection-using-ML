@@ -1,4 +1,4 @@
-# Code for AlexNet model taken from https://www.mydatahack.com/building-alexnet-with-keras/
+# Implimentation of AlexNet model taken from https://www.mydatahack.com/building-alexnet-with-keras/
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout, Flatten,\
@@ -10,11 +10,26 @@ import os
 
 np.random.seed(1000)
 
-# removing error for tensorflow about AVX support
+# removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # (2) Get Data
+signal_path = directory_structure.getWriteDirectory('beat_write_dir', None)
+arrhythmia_classes = directory_structure.getAllElemetsOfFolder(signal_path)
 
+#remove .DS_Store file (only specific for macs)
+arrhythmia_classes.remove('.DS_Store')
+
+image_paths = []
+
+#get path for each image in classification folders
+for classification in arrhythmia_classes:
+    classification_path = ''.join([signal_path, classification])
+    image_list = directory_structure.filesInDirectory('.png', classification_path)
+    for beat_id in image_list:
+        image_paths.append(''.join([classification_path, '/' ,beat_id]))
+    
+# read and save images in dataframes
 
 # (3) CREATE SEQUENTIAL MODEL
 model = Sequential()
