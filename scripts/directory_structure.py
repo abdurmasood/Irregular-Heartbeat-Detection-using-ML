@@ -112,8 +112,14 @@ def extractNumFromFile(file_name):
 	numbers = list(map(int,numbers)) 
 	return str(numbers[0])
 
-def getDirectoriesInFolder(lol):
-	return [os.path.abspath(name) for name in os.listdir(".") if os.path.isdir(name)]
-
 def getAllElemetsOfFolder(path):
+	'''
+	get all files and folders in the path specified
+
+	Args;
+		path (str): path where files are
+
+	Returns:
+		(list): list of strings with all file/folder names 
+	'''
 	return os.listdir(path)
