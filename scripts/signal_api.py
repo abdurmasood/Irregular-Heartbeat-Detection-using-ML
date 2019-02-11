@@ -120,6 +120,7 @@ def saveSignal(signal, beat_number, wr_dir, file_path):
 	
 	#convert grayscale and overwrite
 	img = Image.open(wr_dir + '/image_' + file_number + '_' + str(beat_number) + '.png').convert('LA')
+	img = img.resize((224,224))
 	img.save(wr_dir + '/image_' + file_number + '_' + str(beat_number) + '.png')
 
 	#clear plot before next plot

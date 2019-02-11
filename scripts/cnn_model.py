@@ -11,10 +11,13 @@ import os
 import cv2
 import pandas as pd
 import pickle
+from sklearn.model_selection import train_test_split
+import keras
+from keras.datasets import cifar10
 
 # classes model needs to learn to classify
-CLASSES_TO_CHECK = ['N', 'f']
-IMAGES_TO_TRAIN = 100
+CLASSES_TO_CHECK = ['N', 'f', 'A']
+IMAGES_TO_TRAIN = 0
 
 # removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -62,7 +65,31 @@ def getSignalDataFrame():
 
     return df
 
-def trainAndTestSplit(df):
+def normalizeData(X_train, X_test, y_train, y_test):
+    '''
+    Normalizing the test and train data
+    '''
+    num_of_classes = len(CLASSES_TO_CHECK)
+
+    # image normalization
+    X_train = X_train.astype('float32')
+    X_train = X_train / 255
+    X_test = X_test.astype('float32')
+    X_test = X_test / 255
+
+    # label normalization
+    y_train = keras.utils.to_categorical(y_train, num_of_classes)
+    y_test = keras.utils.to_categorical(y_test, num_of_classes)
+
+    return X_train, X_test, y_train, y_test
+
+def convertToNumpy(X_train, X_test, y_train, y_test):
+    '''
+    Convert data arrays into numpy arrays
+    '''
+    return np.array(X_train), np.array(X_test), np.array(y_train), np.array(y_test)
+
+def trainAndTestSplit(df, images_to_train, size_of_test_data):
     '''
 	take dataframe and divide it into train and 
     test data for model training
@@ -70,52 +97,64 @@ def trainAndTestSplit(df):
 	Args:
 		df (dataframe): dataframe with all images information
 
-	Returns:
-		x_train (list): list of training signals
+        images_to_train (int): number of images to get for training
+                               from dataframe
         
-        x_test (list): list of testing signals
+        size_of_test_data (float): percentage of data specified for training
+
+	Returns:
+		X_train (list): list of training signals
+        
+        X_test (list): list of testing signals
         
         y_train (list): list of training classes
         
         y_test (list): list of testing classes
 	'''
+
+    IMAGES_TO_TRAIN = images_to_train
     image_count = 0
-    x = []
+
+    # train + test data (signals and classes of signals respectively)
+    X = []
     y = []
-    x_train = []
-    y_train = []
-    x_test = []
-    y_test = []
 
     for index, row in df.iterrows():
         # check if current row is one of the classes to classify
         if row['Type'] in CLASSES_TO_CHECK:
-            x.append(row['Signal'])
-            y.append(row['Type'])
+            X.append(row['Signal'])
+            y.append(CLASSES_TO_CHECK.index(row['Type']))
             image_count+=1
 
-            # check if   
             if image_count == IMAGES_TO_TRAIN:
                 image_count = 0
                 CLASSES_TO_CHECK.remove(row['Type'])
 
+        # if data collected from all classes break loop
         if len(CLASSES_TO_CHECK) == 0:
             break
 
     # split x and y into train and test data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=size_of_test_data)
 
-np.random.seed(1000)
+    # convert to numpy array
+    X_train, X_test, y_train, y_test = convertToNumpy(X_train, X_test, y_train, y_test)
 
-# (2) Get Data
+    # normalize data for easy data processing
+    X_train, X_test, y_train, y_test = normalizeData(X_train, X_test, y_train, y_test)
+
+    return X_train, X_test, y_train, y_test
+
+# (2) GET DATA
 df = getSignalDataFrame()
 
-trainAndTestSplit(df)
+X_train, X_test, y_train, y_test = trainAndTestSplit(df, 10, 0.2)
 
 # (3) CREATE SEQUENTIAL MODEL
 model = Sequential()
 
 # -----------------------1st Convolutional Layer--------------------------
-model.add(Conv2D(filters=96, input_shape=(224,224,1), kernel_size=(11,11),\
+model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(11,11),\
  strides=(4,4), padding='valid'))
 model.add(Activation('relu'))
 # Pooling 
@@ -179,15 +218,25 @@ model.add(Dropout(0.4))
 model.add(BatchNormalization())
 
 # --------------------------Output Layer-----------------------------
-model.add(Dense(17))
-model.add(Activation('softmax'))
+model.add(Dense(3, activation='softmax'))
 
 # uncomment to print out summary of model
-# model.summary()
+model.summary()
 
-# (4) Compile 
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+# (4) COMPILE MODEL
+model.compile(
+    loss='categorical_crossentropy', 
+    optimizer='adam', 
+    metrics=['accuracy']
+)
 
-# # (5) Train
-# model.fit(x, y, batch_size=64, epochs=1, verbose=1, \
-# validation_split=0.2, shuffle=True)
+(5) TRAIN
+model.fit(
+    X_train, 
+    y_train, 
+    batch_size=64, 
+    epochs=60, 
+    verbose=1,
+    validation_data=(X_test, y_test),
+    shuffle=True
+)
