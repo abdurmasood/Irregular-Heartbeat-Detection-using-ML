@@ -230,7 +230,7 @@ model.compile(
     metrics=['accuracy']
 )
 
-(5) TRAIN
+# (5) TRAIN
 model.fit(
     X_train, 
     y_train, 
