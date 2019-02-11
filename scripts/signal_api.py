@@ -12,8 +12,8 @@ import re
 
 #number of heartbeats to extract
 NUM_HEARTBEATS_TO_EXTRACT = 1
-BEAT_START_OFFSET = 70
-BEAT_END_OFFSET = 70
+BEAT_START_OFFSET = 100
+BEAT_END_OFFSET = 100
 
 def takeAllInputs():
 	'''
@@ -27,13 +27,13 @@ def takeAllInputs():
 		sample_to (int): end index of sample
 	'''
 	try:
-		file_path = raw_input('\nWhat file do want to display \n')
-		sample_from = raw_input('\nWhere do you want the sample to start \n')
-		sample_to = raw_input('\nWhere do you want the sample to end \n')
+		file_path = input('\nWhat file do want to display \n')
+		sample_from = input('\nWhere do you want the sample to start \n')
+		sample_to = input('\nWhere do you want the sample to end \n')
 		
 		return str(file_path), int(sample_from), int(sample_to)
 	except:
-		print "Error please try again (Check if the name you're entering is in the database)"
+		print("Error please try again (Check if the name you're entering is in the database)")
 
 def calculateHeartRate(sample_to, xqrs, fs):
 	'''
@@ -64,10 +64,16 @@ def getSignalInfo(file_path, sample_from, sample_to):
 
 			beat_end (int): end index of beat
 	'''
+	if sample_from < 0 and sample_to < 0:
+		sample_from = 0
+		sample_to = 60
+	elif sample_from < 0:
+		sample_from=0
+
 	signal, fields = wfdb.rdsamp(file_path, sampfrom=sample_from, sampto=sample_to, channels=[0])
 	return signal, fields
 
-def writeSingleBeat(file_path, beat_start, beat_end, beat_number):
+def writeSingleBeat(file_path, beat_start, beat_end, beat_number, beat_type):
 	'''
 	Plots the single beat of a signal
 
@@ -79,20 +85,20 @@ def writeSingleBeat(file_path, beat_start, beat_end, beat_number):
 			beat_end (int): end index of beat
 
 			beat_number (int): the index of what beat is currently being plotted
-	
-			wr_dir (str): directory to where beat needs to be written
+			
+			beat_type (str): classification label of beat
 	'''
 
 	#save directory where beats need to be written
-	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir')
+	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir', beat_type)
 
 	#get signal and fields of specified file_path
 	signal, fields = getSignalInfo(file_path, beat_start, beat_end)
 
 	#plot beat
-	plotItem(signal, beat_number, beat_wr_dir, file_path)
+	saveSignal(signal, beat_number, beat_wr_dir, file_path)
 
-def plotItem(signal, beat_number, wr_dir, file_path):
+def saveSignal(signal, beat_number, wr_dir, file_path):
 	'''
 	Plots and saves signal passed in current directory passed
 
@@ -114,6 +120,7 @@ def plotItem(signal, beat_number, wr_dir, file_path):
 	
 	#convert grayscale and overwrite
 	img = Image.open(wr_dir + '/image_' + file_number + '_' + str(beat_number) + '.png').convert('LA')
+	img = img.resize((224,224))
 	img.save(wr_dir + '/image_' + file_number + '_' + str(beat_number) + '.png')
 
 	#clear plot before next plot
@@ -158,6 +165,7 @@ def getXQRS(signal, fields):
 
 	Args:
 			signal (list): y values of signal samples
+
 			fields (list): properties of signal
 
 	Returns:
@@ -182,25 +190,30 @@ def getQRSLocations(file_path):
 
 
 
-def extractBeatsFromPatient(file_path):
+def extractBeatsFromPatient(file_path, ann):
 	'''
-	finds qrs complexes in specified patient file
+	finds qrs complexes in specified patient file and save the resulting
+	signals in the form of png images in the image write directory (beat_wr_dir)
 
 	Args:
 		file_path (str): path of where patient data is present
+
+		ann_df (dataframe): data frame containing annotation information of file
 	'''
 
-	#get list of locations where QRS Complex happens
-	qrs_locs = getQRSLocations(file_path)
+	#get list of locations where annotations are
+	ann_locs = ann.sample
 
 	#uncomment to extract all heartbeats
-	#NUM_HEARTBEATS_TO_EXTRACT = len(qrs_locs)
+	NUM_HEARTBEATS_TO_EXTRACT = len(ann_locs) - 1
 
-	#save directory where beats need to be written
-	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir')
+	#get path where beats need to be written
+	beat_wr_dir = directory_structure.getWriteDirectory('beat_write_dir', None)
 
 	#plot and save the beats in the range selected
 	for beat_number in range(NUM_HEARTBEATS_TO_EXTRACT):
-		beat_start = qrs_locs[beat_number] - BEAT_START_OFFSET
-		beat_end = qrs_locs[beat_number+1] - BEAT_END_OFFSET
-		writeSingleBeat(file_path, beat_start, beat_end, beat_number)	
+		beat_start = ann_locs[beat_number] - BEAT_START_OFFSET
+		beat_end = ann_locs[beat_number+1] - BEAT_END_OFFSET
+		beat_type = ann.symbol[beat_number]
+
+		writeSingleBeat(file_path, beat_start, beat_end, beat_number, beat_type)
