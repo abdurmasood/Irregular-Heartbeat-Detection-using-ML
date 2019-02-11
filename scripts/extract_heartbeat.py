@@ -2,8 +2,9 @@
 
 import os 
 import wfdb
-import signal_info
+import signal_api
 import directory_structure
+import natsort  # module used to sort file names
 
 
 if __name__ == '__main__':
@@ -14,7 +15,16 @@ if __name__ == '__main__':
 	#get all .hea and .dat files (respectively)
 	signal_files = directory_structure.filesInDirectory('.hea', signal_dir)
 
+	# sort file names in ascending order in list
+	signal_files = natsort.natsorted(signal_files)
+
 	#extract and save beats from file provided
 	for signal_file in signal_files:
-		#uncomment to save images of beats
-		signal_info.extractBeatsFromPatient(signal_dir + '/' + directory_structure.removeFileExtension(signal_file))
+		print(signal_file)
+		signal_path = signal_dir + '/' + directory_structure.removeFileExtension(signal_file)
+
+		# get annotation data frame of signal file
+		ann = wfdb.rdann(signal_path, 'atr', return_label_elements=['symbol', 'description', 'label_store'] , summarize_labels=True)
+		
+		# uncomment to save images of beats
+		signal_api.extractBeatsFromPatient(signal_path, ann)
