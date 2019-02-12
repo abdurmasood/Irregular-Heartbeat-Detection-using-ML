@@ -69,7 +69,7 @@ def normalizeData(X_train, X_test, y_train, y_test):
     '''
     Normalizing the test and train data
     '''
-    num_of_classes = len(CLASSES_TO_CHECK)
+    num_of_classes = len(CLASSES_TO_CHECK) + 1
 
     # image normalization
     X_train = X_train.astype('float32')
@@ -148,7 +148,7 @@ def trainAndTestSplit(df, images_to_train, size_of_test_data):
 # (2) GET DATA
 df = getSignalDataFrame()
 
-X_train, X_test, y_train, y_test = trainAndTestSplit(df, 10, 0.2)
+X_train, X_test, y_train, y_test = trainAndTestSplit(df, 100, 0.2)
 
 # (3) CREATE SEQUENTIAL MODEL
 model = Sequential()
