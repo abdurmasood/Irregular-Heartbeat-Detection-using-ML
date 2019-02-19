@@ -10,10 +10,8 @@ import directory_structure
 import os
 import cv2
 import pandas as pd
-import pickle
 from sklearn.model_selection import train_test_split
 import keras
-from keras.datasets import cifar10
 
 # classes model needs to learn to classify
 CLASSES_TO_CHECK = ['N', '_', 'V', 'L']
@@ -156,85 +154,166 @@ def printTestMetrics(score):
     print('Test accuracy:', score[1])
 
 
+def createModel(model_name):
+    '''
+    Implementation of model to train images (Alexnet or Novelnet)
+
+    Args:
+        model_name (str): name of the model to create (can choose from Alexnet and Novelnet)
+
+    Returns:
+        model (model): model object implementation of alexnet
+    '''
+    model = Sequential()
+
+    if model_name == 'Alexnet':
+        # -----------------------1st Convolutional Layer--------------------------
+        model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(11,11),\
+        strides=(4,4), padding='valid'))
+        model.add(Activation('relu'))
+        # Pooling 
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Batch Normalisation before passing it to the next layer
+        model.add(BatchNormalization())
+
+
+        # -----------------------2nd Convolutional Layer---------------------------
+        model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Pooling
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------3rd Convolutional Layer----------------------------
+        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------4th Convolutional Layer----------------------------
+        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------5th Convolutional Layer----------------------------
+        model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Pooling
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # Passing it to a dense layer
+        model.add(Flatten())
+        # -------------------------1st Dense Layer----------------------------
+        model.add(Dense(4096, input_shape=(224*224*3,)))
+        model.add(Activation('relu'))
+        # Add Dropout to prevent overfitting
+        model.add(Dropout(0.4))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -------------------------2nd Dense Layer---------------------------
+        model.add(Dense(4096))
+        model.add(Activation('relu'))
+        # Add Dropout
+        model.add(Dropout(0.4))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -------------------------3rd Dense Layer---------------------------
+        model.add(Dense(1000))
+        model.add(Activation('relu'))
+        # Add Dropout
+        model.add(Dropout(0.4))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # --------------------------Output Layer-----------------------------
+        model.add(Dense(NUMBER_OF_CLASSES, activation='softmax'))
+    
+    elif model_name == 'Novelnet':
+        # -----------------------1st Convolutional Layer--------------------------
+        model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(13,13),\
+        strides=(4,4), padding='valid'))
+        model.add(Activation('relu'))
+        # Pooling 
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Batch Normalisation before passing it to the next layer
+        model.add(BatchNormalization())
+
+
+        # -----------------------2nd Convolutional Layer---------------------------
+        model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Pooling
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------3rd Convolutional Layer----------------------------
+        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------4th Convolutional Layer----------------------------
+        model.add(Conv2D(filters=434, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------5th Convolutional Layer----------------------------
+        model.add(Conv2D(filters=500, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Pooling
+        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # Passing it to a dense layer
+        model.add(Flatten())
+        # -------------------------1st Dense Layer----------------------------
+        model.add(Dense(4096, input_shape=(224*224*3,)))
+        model.add(Activation('relu'))
+        # Add Dropout to prevent overfitting
+        model.add(Dropout(0.4))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -------------------------2nd Dense Layer---------------------------
+        model.add(Dense(4096))
+        model.add(Activation('relu'))
+        # Add Dropout
+        model.add(Dropout(0.6))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -------------------------3rd Dense Layer---------------------------
+        model.add(Dense(1000))
+        model.add(Activation('relu'))
+        # Add Dropout
+        model.add(Dropout(0.7))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # --------------------------Output Layer-----------------------------
+        model.add(Dense(NUMBER_OF_CLASSES, activation='softmax'))
+    
+
+    return model
+
 if __name__ == '__main__':
 
     # (2) GET DATA
     df = getSignalDataFrame()
 
-    X_train, X_test, y_train, y_test = trainAndTestSplit(df, 0.2)
+    X_train, X_test, y_train, y_test = trainAndTestSplit(df, 0.25)
 
     # (3) CREATE SEQUENTIAL MODEL
-    model = Sequential()
-
-    # -----------------------1st Convolutional Layer--------------------------
-    model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(11,11),\
-    strides=(4,4), padding='valid'))
-    model.add(Activation('relu'))
-    # Pooling 
-    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
-    # Batch Normalisation before passing it to the next layer
-    model.add(BatchNormalization())
-
-
-    # -----------------------2nd Convolutional Layer---------------------------
-    model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
-    model.add(Activation('relu'))
-    # Pooling
-    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # -----------------------3rd Convolutional Layer----------------------------
-    model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
-    model.add(Activation('relu'))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # -----------------------4th Convolutional Layer----------------------------
-    model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
-    model.add(Activation('relu'))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # -----------------------5th Convolutional Layer----------------------------
-    model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), padding='valid'))
-    model.add(Activation('relu'))
-    # Pooling
-    model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # Passing it to a dense layer
-    model.add(Flatten())
-    # -------------------------1st Dense Layer----------------------------
-    model.add(Dense(4096, input_shape=(224*224*3,)))
-    model.add(Activation('relu'))
-    # Add Dropout to prevent overfitting
-    model.add(Dropout(0.4))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # -------------------------2nd Dense Layer---------------------------
-    model.add(Dense(4096))
-    model.add(Activation('relu'))
-    # Add Dropout
-    model.add(Dropout(0.4))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # -------------------------3rd Dense Layer---------------------------
-    model.add(Dense(1000))
-    model.add(Activation('relu'))
-    # Add Dropout
-    model.add(Dropout(0.4))
-    # Batch Normalisation
-    model.add(BatchNormalization())
-
-    # --------------------------Output Layer-----------------------------
-    model.add(Dense(NUMBER_OF_CLASSES, activation='softmax'))
-
-    # uncomment to print out summary of model
-    model.summary()
+    model = createModel('Novelnet')
 
     # (4) COMPILE MODEL
     model.compile(
@@ -248,7 +327,7 @@ if __name__ == '__main__':
         X_train, 
         y_train, 
         batch_size=64, 
-        epochs=60, 
+        epochs=40, 
         verbose=1,
         validation_data=(X_test, y_test),
         shuffle=True
