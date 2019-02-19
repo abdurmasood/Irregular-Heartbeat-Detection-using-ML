@@ -12,9 +12,10 @@ import cv2
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import keras
+from collections import deque
 
 # classes model needs to learn to classify
-CLASSES_TO_CHECK = ['N', '_', 'V', 'L']
+CLASSES_TO_CHECK = ['_', 'A', 'f', 'F', 'L', 'N', 'R', 'V']
 NUMBER_OF_CLASSES = len(CLASSES_TO_CHECK)
 IMAGES_TO_TRAIN = 500
 
@@ -38,10 +39,10 @@ def getSignalDataFrame():
 
     arrhythmia_classes = directory_structure.getAllSubfoldersOfFolder(signal_path)
 
-    image_paths = []
+    image_paths = deque()
+    image_ids = deque()
+    class_types = deque()
     images = []
-    image_ids = []
-    class_types = []
 
     #get path for each image in classification folders
     for classification in arrhythmia_classes:
@@ -54,8 +55,7 @@ def getSignalDataFrame():
 
     # read and save images in dataframe
     for path in image_paths:
-        img =cv2.imread(path)
-        images.append(img)
+        images.append(cv2.imread(path))
 
     # save information in dataframe
     df['Signal ID'] = image_ids
