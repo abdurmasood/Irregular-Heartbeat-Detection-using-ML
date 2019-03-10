@@ -1,4 +1,4 @@
-# Implimentation of AlexNet model taken from https://www.mydatahack.com/building-alexnet-with-keras/
+# Implmentation of AlexNet model taken from https://www.mydatahack.com/building-alexnet-with-keras/
 # script that reads data, creates model and trains it
 
 from keras.models import Sequential
@@ -13,11 +13,13 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import keras
 from collections import deque
+from keras.utils import multi_gpu_model
+from keras.callbacks import EarlyStopping
 
 # classes model needs to learn to classify
-CLASSES_TO_CHECK = ['_', 'A', 'f', 'F', 'L', 'N', 'R', 'V']
+CLASSES_TO_CHECK = [ 'A', 'L', 'N']
 NUMBER_OF_CLASSES = len(CLASSES_TO_CHECK)
-IMAGES_TO_TRAIN = 500
+IMAGES_TO_TRAIN = 6000
 
 # removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -310,31 +312,35 @@ if __name__ == '__main__':
     # (2) GET DATA
     df = getSignalDataFrame()
 
-    X_train, X_test, y_train, y_test = trainAndTestSplit(df, 0.25)
+    X_train, X_test, y_train, y_test = trainAndTestSplit(df, 0.15)
 
     # (3) CREATE SEQUENTIAL MODEL
-    model = createModel('Novelnet')
+    model = createModel('Alexnet')
+
+   # uncomment to do computation on multiple gpus
+    #parallel_model = multi_gpu_model(model, gpus=2)
+    parallel_model = model
 
     # (4) COMPILE MODEL
-    model.compile(
+    parallel_model.compile(
         loss='categorical_crossentropy', 
         optimizer='adam', 
         metrics=['accuracy']
     )
 
     # (5) TRAIN
-    history = model.fit(
+    history = parallel_model.fit(
         X_train, 
         y_train, 
         batch_size=64, 
-        epochs=40, 
+        epochs=30, 
         verbose=1,
         validation_data=(X_test, y_test),
-        shuffle=True
+        shuffle=True,
     )
 
     # (6) PREDICTION
-    predictions = model.predict(X_test)
-    score = model.evaluate(X_test, y_test, verbose=0)
+    predictions = parallel_model.predict(X_test)
+    score = parallel_model.evaluate(X_test, y_test, verbose=0)
 
     printTestMetrics(score)
