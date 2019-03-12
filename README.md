@@ -1,5 +1,5 @@
 # Irregular Heartbeat Detection using a Convolution Neural Network
-Arrhythmia is anirregularity in the rate or rhythm of the heartbeat which, in some cases,may occur sporadically in a subjects daily life. Therefore, the automatic recognition of abnormal heartbeats from a large amount of ECG data is an important and essential task. In this project, a novel deep learning approach is proposed for ECG beat classification using a 2-Dimension convolution neural network **(Alexnet)**. Experiments are done an a well-known dataset called the MIT-BIH Arrhythmia.
+Arrhythmia is an irregularity in the rate or rhythm of the heartbeat which, in some cases, may occur sporadically in a subjects daily life. Therefore, the automatic recognition of abnormal heartbeats from a large amount of ECG data is an important and essential task. In this project, a novel deep learning approach is proposed for ECG beat classification using a 2-Dimension convolution neural network **(Alexnet)**.  Experiments are done on a public dataset called the MIT-BIH Arrhythmia.
 
 ## Dependencies
 Before you can run the scripts, there are a few dependencies that need to be downloaded using pip. These include:
@@ -12,9 +12,9 @@ Before you can run the scripts, there are a few dependencies that need to be dow
 - [Tensorflow](https://pypi.org/project/tensorflow/)
 
 ## Setting up the Project
-Before the project can be run, the MIT-BIH dataset needs to be downloaded so that they can be accessed by the program scripts. The poiners to the MIT-BIH dataset header files are available in this repository which can be downloaded using [**Git Large File Storage**](https://git-lfs.github.com/).
+Before the project can be run, the MIT-BIH dataset needs to be downloaded so that the program scripts can access them. The pointers to the MIT-BIH dataset header files are available in this repository which can be downloaded using [**Git Large File Storage**](https://git-lfs.github.com/).
 
-Git-LFS can be easily installed using the command `git lfs install` and the header files can be downloaded using the command `git lfs fetch`.
+Git-LFS can be easily installed using the command `git lfs install`, and the header files can be downloaded using the command `git lfs fetch`.
 
 ## Directory Structure
 ```
