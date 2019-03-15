@@ -17,9 +17,9 @@ from keras.utils import multi_gpu_model
 from keras.callbacks import EarlyStopping
 
 # classes model needs to learn to classify
-CLASSES_TO_CHECK = [ 'A', 'L', 'N']
+CLASSES_TO_CHECK = ['L', 'N', 'V', 'A']
 NUMBER_OF_CLASSES = len(CLASSES_TO_CHECK)
-IMAGES_TO_TRAIN = 50
+IMAGES_TO_TRAIN = 2000
 
 # removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -27,6 +27,16 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
 def saveMetricsAndWeights(score, model):
+    '''
+    Save metric and weight data in specific folders
+
+    Args:
+        score (list): list containing loss value and accuracy of current model
+
+        model (keras model): compiled model which has been trained with training data
+	Returns:
+		(dataframe): dataframe contatining image information 
+	'''
     loss = score[0]
     current_acc = score[1]
 
@@ -149,6 +159,7 @@ def trainAndTestSplit(df, size_of_test_data):
             image_count+=1
 
             if image_count == IMAGES_TO_TRAIN:
+
                 image_count = 0
                 classes_to_check.remove(row['Type'])
 
