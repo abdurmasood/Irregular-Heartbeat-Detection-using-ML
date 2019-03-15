@@ -19,10 +19,33 @@ from keras.callbacks import EarlyStopping
 # classes model needs to learn to classify
 CLASSES_TO_CHECK = [ 'A', 'L', 'N']
 NUMBER_OF_CLASSES = len(CLASSES_TO_CHECK)
-IMAGES_TO_TRAIN = 6000
+IMAGES_TO_TRAIN = 50
 
 # removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+
+
+def saveMetricsAndWeights(score, model):
+    loss = score[0]
+    current_acc = score[1]
+
+    directory_structure.getWriteDirectory('testing', None)
+    weights_path = directory_structure.getWriteDirectory('testing', 'model_weights')
+    metrics_path = directory_structure.getWriteDirectory('testing', 'accuracy_metrics')
+
+    if (len(directory_structure.filesInDirectory('.npy', metrics_path)) == 0):
+        # create text file with placeholder accuracy value (i.e 0)
+        np.save(metrics_path + 'metrics.npy', [0])
+        model.save(weights_path + 'my_model.h5')
+        del model
+    else:
+        highest_acc = np.load(metrics_path + 'metrics.npy')[0]
+        if (current_acc > highest_acc):
+            np.save(metrics_path + 'metrics.npy', [current_acc])
+            model.save(weights_path + 'my_model.h5')
+            del model
+            print('\nAccuracy Increase: ' + str(current_acc - highest_acc) + '%')
 
 
 def getSignalDataFrame():
@@ -344,3 +367,6 @@ if __name__ == '__main__':
     score = parallel_model.evaluate(X_test, y_test, verbose=0)
 
     printTestMetrics(score)
+
+    # (7) SAVE TESTS + WEIGHTS 
+    saveMetricsAndWeights(score, parallel_model)
