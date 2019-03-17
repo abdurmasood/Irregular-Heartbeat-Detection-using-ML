@@ -14,7 +14,7 @@ Before you can run the scripts, make sure you have [python3](https://www.python.
 ## Setting up the Project
 Before the project can be run, the MIT-BIH dataset needs to be downloaded so that the program scripts can access them. The pointers to the MIT-BIH dataset header files are available in this repository which can be downloaded using [**Git Large File Storage**](https://git-lfs.github.com/).
 
-Git-LFS can be easily installed using the command `git lfs install`, and the header files can be downloaded using the command `git lfs fetch`.
+Git-LFS can be easily installed using the command `git lfs install`, and the lfs linked files can be downloaded using the command `git lfs fetch`.
 
 ## Directory Structure
 ```
