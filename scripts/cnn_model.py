@@ -19,7 +19,7 @@ from keras.callbacks import EarlyStopping
 # classes model needs to learn to classify
 CLASSES_TO_CHECK = ['L', 'N', 'V', 'A']
 NUMBER_OF_CLASSES = len(CLASSES_TO_CHECK)
-IMAGES_TO_TRAIN = 2000
+IMAGES_TO_TRAIN = 3000
 
 # removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -55,7 +55,7 @@ def saveMetricsAndWeights(score, model):
             np.save(metrics_path + 'metrics.npy', [current_acc])
             model.save(weights_path + 'my_model.h5')
             del model
-            print('\nAccuracy Increase: ' + str(current_acc - highest_acc) + '%')
+            print('\nAccuracy Increase: ' + str((current_acc - highest_acc)*100) + '%')
 
 
 def getSignalDataFrame():
@@ -367,7 +367,7 @@ if __name__ == '__main__':
         X_train, 
         y_train, 
         batch_size=64, 
-        epochs=30, 
+        epochs=80, 
         verbose=1,
         validation_data=(X_test, y_test),
         shuffle=True,
