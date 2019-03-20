@@ -22,18 +22,18 @@ Git-LFS can be easily installed using the command `git lfs install`, and the lfs
 ├── mit-bih_database
 │   ├── 100.csv
 │   ├── 100annotations.txt
-|        .
-|        .
-|        .
+│        .
+│        .
+│        .
 │   ├── 234.csv
 │   └── 234annotations.txt
 ├── mit-bih_waveform
 │   ├── 100.atr
 │   ├── 100.dat
 │   ├── 100.hea
-|        .
-|        .
-|        .
+│        .
+│        .
+│        .
 │   ├── 234.atr
 │   ├── 234.dat
 │   └── 234.hea
