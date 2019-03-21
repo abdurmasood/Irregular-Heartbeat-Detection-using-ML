@@ -17,9 +17,9 @@ from keras.utils import multi_gpu_model
 from keras.callbacks import EarlyStopping
 
 # classes model needs to learn to classify
-CLASSES_TO_CHECK = ['L', 'N', 'V', 'A']
+CLASSES_TO_CHECK = ['L', 'N', 'V', 'A', 'R']
 NUMBER_OF_CLASSES = len(CLASSES_TO_CHECK)
-IMAGES_TO_TRAIN = 3000
+IMAGES_TO_TRAIN = 2450
 
 # removing warning for tensorflow about AVX support
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -146,6 +146,7 @@ def trainAndTestSplit(df, size_of_test_data):
 	'''
     image_count = 0
     classes_to_check = CLASSES_TO_CHECK
+    images_available_in_class = IMAGES_TO_TRAIN
 
     # train + test data (signals and classes of signals respectively)
     X = []
@@ -154,14 +155,22 @@ def trainAndTestSplit(df, size_of_test_data):
     for index, row in df.iterrows():
         # check if current row is one of the classes to classify
         if row['Type'] in classes_to_check:
+            images_available_in_class = df['Type'].value_counts()[row['Type']]
+
             X.append(row['Signal'])
             y.append(classes_to_check.index(row['Type']))
             image_count+=1
 
-            if image_count == IMAGES_TO_TRAIN:
+            if  images_available_in_class < IMAGES_TO_TRAIN:    
+                if image_count == df['Type'].value_counts()[row['Type']]:
 
-                image_count = 0
-                classes_to_check.remove(row['Type'])
+                    image_count = 0
+                    classes_to_check.remove(row['Type'])
+            else:
+                if image_count == IMAGES_TO_TRAIN:
+
+                    image_count = 0
+                    classes_to_check.remove(row['Type'])
 
         # if data collected from all classes break loop
         if len(classes_to_check) == 0:
