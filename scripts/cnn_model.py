@@ -305,12 +305,18 @@ def createModel(model_name):
         model.add(BatchNormalization())
 
         # -----------------------4th Convolutional Layer----------------------------
-        model.add(Conv2D(filters=434, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
         model.add(Activation('relu'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
-        # -----------------------5th Convolutional Layer----------------------------
+         # -----------------------5th Convolutional Layer----------------------------
+        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Activation('relu'))
+        # Batch Normalisation
+        model.add(BatchNormalization())
+
+        # -----------------------6th Convolutional Layer----------------------------
         model.add(Conv2D(filters=500, kernel_size=(3,3), strides=(1,1), padding='valid'))
         model.add(Activation('relu'))
         # Pooling
@@ -340,7 +346,7 @@ def createModel(model_name):
         model.add(Dense(1000))
         model.add(Activation('relu'))
         # Add Dropout
-        model.add(Dropout(0.7))
+        model.add(Dropout(0.5))
         # Batch Normalisation
         model.add(BatchNormalization())
 
@@ -376,7 +382,7 @@ if __name__ == '__main__':
         X_train, 
         y_train, 
         batch_size=64, 
-        epochs=80, 
+        epochs=150, 
         verbose=1,
         validation_data=(X_test, y_test),
         shuffle=True,
