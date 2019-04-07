@@ -1,9 +1,10 @@
-# Implmentation of AlexNet model taken from https://www.mydatahack.com/building-alexnet-with-keras/
+# Implmentation of AlexNet model taken from 
+# https://www.mydatahack.com/building-alexnet-with-keras/
 # script that reads data, creates model and trains it
 
 from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout, Flatten,\
- Conv2D, MaxPooling2D
+    Conv2D, MaxPooling2D
 from keras.layers.normalization import BatchNormalization
 import numpy as np
 import directory_structure
@@ -25,7 +26,6 @@ IMAGES_TO_TRAIN = 2450
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 
-
 def saveMetricsAndWeights(score, model):
     '''
     Save metric and weight data in specific folders
@@ -34,15 +34,17 @@ def saveMetricsAndWeights(score, model):
         score (list): list containing loss value and accuracy of current model
 
         model (keras model): compiled model which has been trained with training data
-	Returns:
-		(dataframe): dataframe contatining image information 
-	'''
+        Returns:
+                (dataframe): dataframe contatining image information 
+        '''
     loss = score[0]
     current_acc = score[1]
 
     directory_structure.getWriteDirectory('testing', None)
-    weights_path = directory_structure.getWriteDirectory('testing', 'model_weights')
-    metrics_path = directory_structure.getWriteDirectory('testing', 'accuracy_metrics')
+    weights_path = directory_structure.getWriteDirectory(
+        'testing', 'model_weights')
+    metrics_path = directory_structure.getWriteDirectory(
+        'testing', 'accuracy_metrics')
 
     if (len(directory_structure.filesInDirectory('.npy', metrics_path)) == 0):
         # create text file with placeholder accuracy value (i.e 0)
@@ -55,38 +57,41 @@ def saveMetricsAndWeights(score, model):
             np.save(metrics_path + 'metrics.npy', [current_acc])
             model.save(weights_path + 'my_model.h5')
             del model
-            print('\nAccuracy Increase: ' + str((current_acc - highest_acc)*100) + '%')
+            print('\nAccuracy Increase: ' +
+                  str((current_acc - highest_acc)*100) + '%')
 
 
 def getSignalDataFrame():
     '''
-	read signal images present in the directory beat_write_dir
+        read signal images present in the directory beat_write_dir
     and save them in a dataframe
 
-	Returns:
-		(dataframe): dataframe contatining image information 
-	'''
-     #get paths for where signals are present
+        Returns:
+                (dataframe): dataframe contatining image information 
+        '''
+    # get paths for where signals are present
     signal_path = directory_structure.getWriteDirectory('beat_write_dir', None)
 
-    #create dataframe
+    # create dataframe
     df = pd.DataFrame(columns=['Signal ID', 'Signal', 'Type'])
 
-    arrhythmia_classes = directory_structure.getAllSubfoldersOfFolder(signal_path)
+    arrhythmia_classes = directory_structure.getAllSubfoldersOfFolder(
+        signal_path)
 
     image_paths = deque()
     image_ids = deque()
     class_types = deque()
     images = []
 
-    #get path for each image in classification folders
+    # get path for each image in classification folders
     for classification in arrhythmia_classes:
         classification_path = ''.join([signal_path, classification])
-        image_list = directory_structure.filesInDirectory('.png', classification_path)
+        image_list = directory_structure.filesInDirectory(
+            '.png', classification_path)
         for beat_id in image_list:
             image_ids.append(directory_structure.removeFileExtension(beat_id))
             class_types.append(classification)
-            image_paths.append(''.join([classification_path, '/' ,beat_id]))
+            image_paths.append(''.join([classification_path, '/', beat_id]))
 
     # read and save images in dataframe
     for path in image_paths:
@@ -98,6 +103,7 @@ def getSignalDataFrame():
     df['Signal'] = images
 
     return df
+
 
 def normalizeData(X_train, X_test, y_train, y_test):
     '''
@@ -116,34 +122,36 @@ def normalizeData(X_train, X_test, y_train, y_test):
 
     return X_train, X_test, y_train, y_test
 
+
 def convertToNumpy(X_train, X_test, y_train, y_test):
     '''
     Convert data arrays into numpy arrays
     '''
     return np.array(X_train), np.array(X_test), np.array(y_train), np.array(y_test)
 
+
 def trainAndTestSplit(df, size_of_test_data):
     '''
-	take dataframe and divide it into train and 
+        take dataframe and divide it into train and 
     test data for model training
 
-	Args:
-		df (dataframe): dataframe with all images information
+        Args:
+                df (dataframe): dataframe with all images information
 
         images_to_train (int): number of images to get for training
                                from dataframe
-        
+
         size_of_test_data (float): percentage of data specified for training
 
-	Returns:
-		X_train (list): list of training signals
-        
+        Returns:
+                X_train (list): list of training signals
+
         X_test (list): list of testing signals
-        
+
         y_train (list): list of training classes
-        
+
         y_test (list): list of testing classes
-	'''
+        '''
     image_count = 0
     classes_to_check = CLASSES_TO_CHECK
     images_available_in_class = IMAGES_TO_TRAIN
@@ -159,9 +167,9 @@ def trainAndTestSplit(df, size_of_test_data):
 
             X.append(row['Signal'])
             y.append(classes_to_check.index(row['Type']))
-            image_count+=1
+            image_count += 1
 
-            if  images_available_in_class < IMAGES_TO_TRAIN:    
+            if images_available_in_class < IMAGES_TO_TRAIN:
                 if image_count == df['Type'].value_counts()[row['Type']]:
 
                     image_count = 0
@@ -177,15 +185,19 @@ def trainAndTestSplit(df, size_of_test_data):
             break
 
     # split x and y into train and test data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=size_of_test_data)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=size_of_test_data)
 
     # convert to numpy array
-    X_train, X_test, y_train, y_test = convertToNumpy(X_train, X_test, y_train, y_test)
+    X_train, X_test, y_train, y_test = convertToNumpy(
+        X_train, X_test, y_train, y_test)
 
     # normalize data for easy data processing
-    X_train, X_test, y_train, y_test = normalizeData(X_train, X_test, y_train, y_test)
+    X_train, X_test, y_train, y_test = normalizeData(
+        X_train, X_test, y_train, y_test)
 
     return X_train, X_test, y_train, y_test
+
 
 def printTestMetrics(score):
     '''
@@ -213,40 +225,46 @@ def createModel(model_name):
 
     if model_name == 'Alexnet':
         # -----------------------1st Convolutional Layer--------------------------
-        model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(11,11),\
-        strides=(4,4), padding='valid'))
+        model.add(Conv2D(filters=96, input_shape=(224, 224, 3), kernel_size=(11, 11),
+                         strides=(4, 4), padding='valid'))
         model.add(Activation('relu'))
-        # Pooling 
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Pooling
+        model.add(MaxPooling2D(pool_size=(2, 2),
+                               strides=(2, 2), padding='valid'))
         # Batch Normalisation before passing it to the next layer
         model.add(BatchNormalization())
 
-
         # -----------------------2nd Convolutional Layer---------------------------
-        model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=256, kernel_size=(
+            11, 11), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Pooling
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        model.add(MaxPooling2D(pool_size=(2, 2),
+                               strides=(2, 2), padding='valid'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
         # -----------------------3rd Convolutional Layer----------------------------
-        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=384, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
         # -----------------------4th Convolutional Layer----------------------------
-        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=384, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
         # -----------------------5th Convolutional Layer----------------------------
-        model.add(Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=256, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Pooling
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        model.add(MaxPooling2D(pool_size=(2, 2),
+                               strides=(2, 2), padding='valid'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
@@ -278,49 +296,56 @@ def createModel(model_name):
 
         # --------------------------Output Layer-----------------------------
         model.add(Dense(NUMBER_OF_CLASSES, activation='softmax'))
-    
+
     elif model_name == 'Novelnet':
         # -----------------------1st Convolutional Layer--------------------------
-        model.add(Conv2D(filters=96, input_shape=(224,224,3), kernel_size=(13,13),\
-        strides=(4,4), padding='valid'))
+        model.add(Conv2D(filters=96, input_shape=(224, 224, 3), kernel_size=(13, 13),
+                         strides=(4, 4), padding='valid'))
         model.add(Activation('relu'))
-        # Pooling 
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        # Pooling
+        model.add(MaxPooling2D(pool_size=(2, 2),
+                               strides=(2, 2), padding='valid'))
         # Batch Normalisation before passing it to the next layer
         model.add(BatchNormalization())
 
-
         # -----------------------2nd Convolutional Layer---------------------------
-        model.add(Conv2D(filters=256, kernel_size=(11,11), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=256, kernel_size=(
+            11, 11), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Pooling
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        model.add(MaxPooling2D(pool_size=(2, 2),
+                               strides=(2, 2), padding='valid'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
         # -----------------------3rd Convolutional Layer----------------------------
-        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=384, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
         # -----------------------4th Convolutional Layer----------------------------
-        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=384, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
-         # -----------------------5th Convolutional Layer----------------------------
-        model.add(Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        # -----------------------5th Convolutional Layer----------------------------
+        model.add(Conv2D(filters=384, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
         # -----------------------6th Convolutional Layer----------------------------
-        model.add(Conv2D(filters=500, kernel_size=(3,3), strides=(1,1), padding='valid'))
+        model.add(Conv2D(filters=500, kernel_size=(
+            3, 3), strides=(1, 1), padding='valid'))
         model.add(Activation('relu'))
         # Pooling
-        model.add(MaxPooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
+        model.add(MaxPooling2D(pool_size=(2, 2),
+                               strides=(2, 2), padding='valid'))
         # Batch Normalisation
         model.add(BatchNormalization())
 
@@ -352,9 +377,9 @@ def createModel(model_name):
 
         # --------------------------Output Layer-----------------------------
         model.add(Dense(NUMBER_OF_CLASSES, activation='softmax'))
-    
 
     return model
+
 
 if __name__ == '__main__':
 
@@ -372,17 +397,17 @@ if __name__ == '__main__':
 
     # (4) COMPILE MODEL
     parallel_model.compile(
-        loss='categorical_crossentropy', 
-        optimizer='adam', 
+        loss='categorical_crossentropy',
+        optimizer='adam',
         metrics=['accuracy']
     )
 
     # (5) TRAIN
     history = parallel_model.fit(
-        X_train, 
-        y_train, 
-        batch_size=64, 
-        epochs=150, 
+        X_train,
+        y_train,
+        batch_size=64,
+        epochs=150,
         verbose=1,
         validation_data=(X_test, y_test),
         shuffle=True,
@@ -394,5 +419,5 @@ if __name__ == '__main__':
 
     printTestMetrics(score)
 
-    # (7) SAVE TESTS + WEIGHTS 
+    # (7) SAVE TESTS + WEIGHTS
     saveMetricsAndWeights(score, parallel_model)
