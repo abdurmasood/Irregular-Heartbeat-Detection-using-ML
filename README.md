@@ -1,5 +1,5 @@
 # Irregular Heartbeat Detection using a Convolution Neural Network
-Arrhythmia is an irregularity in the rate or rhythm of the heartbeat which, in some cases, may occur sporadically in a subjects daily life. Therefore, the automatic recognition of abnormal heartbeats from a large amount of ECG data is an important and essential task. In this project, a novel deep learning approach is proposed for ECG beat classification using a 2-Dimension convolution neural network **(Alexnet)**.  Experiments are done on a public dataset called the MIT-BIH Arrhythmia.
+Arrhythmia is an irregularity in the rate or rhythm of the heartbeat which, in some cases, may occur sporadically in a subjects daily life. Therefore, the automatic recognition of abnormal heartbeats from a large amount of ECG data is an important and essential task. In this project, a novel deep learning approach is proposed for ECG beat classification using a 2-Dimension convolution neural network.  Experiments are done on a public dataset called the MIT-BIH Arrhythmia.
 
 ## Dependencies
 Before you can run the scripts, make sure you have [python3](https://www.python.org/downloads/release/python-367/) installed. There are a few other dependencies that need to be downloaded using pip3. These include:
